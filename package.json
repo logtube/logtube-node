@@ -2,7 +2,7 @@
   "name": "logtube",
   "version": "0.0.1",
   "description": "Logtube Node.js SDK",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,5 +19,20 @@
   "bugs": {
     "url": "https://github.com/logtube/logtube-node/issues"
   },
-  "homepage": "https://github.com/logtube/logtube-node#readme"
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "homepage": "https://github.com/logtube/logtube-node#readme",
+  "devDependencies": {
+    "@types/async": "^3.0.2",
+    "@types/express": "^4.17.1",
+    "@types/fs-extra": "^8.0.0",
+    "@types/moment": "^2.13.0",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.3"
+  },
+  "dependencies": {
+    "async": "^3.1.0",
+    "fs-extra": "^8.1.0",
+    "moment": "^2.24.0"
+  }
 }
