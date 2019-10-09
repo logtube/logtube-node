@@ -1,0 +1,23 @@
+{
+  "name": "logtube",
+  "version": "0.0.1",
+  "description": "Logtube Node.js SDK",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/logtube/logtube-node.git"
+  },
+  "keywords": [
+    "logtube",
+    "log"
+  ],
+  "author": "Guo Y.K. <hi@guoyk.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/logtube/logtube-node/issues"
+  },
+  "homepage": "https://github.com/logtube/logtube-node#readme"
+}
