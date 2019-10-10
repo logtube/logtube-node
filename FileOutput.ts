@@ -9,7 +9,7 @@ export interface IFileOutputOptions {
     /**
      * 使用 FileOutput 输出的主题
      */
-    topics: [string];
+    topics: string[];
     /**
      * 文件输出的根目录
      */
@@ -44,9 +44,7 @@ export class FileOutput implements IOutput {
 
     constructor(opts: IFileOutputOptions) {
         this.opts = opts;
-        this.ensureDirectories().catch((e) => {
-            process.stderr.write(`logtube: FileOutput failed to create dirs: ${e}\n`);
-        });
+        this.ensureDirectories();
         this.appendQueue = async.queue(async (task) => {
             await this.appendLine(task.filename, task.line);
         });
@@ -64,8 +62,8 @@ export class FileOutput implements IOutput {
     /**
      * 在初始化的时候，确保所有日志文件目录都创建好了
      */
-    private async ensureDirectories() {
-        await fs.mkdirp(this.opts.dir);
+    private ensureDirectories() {
+        fs.mkdirpSync(this.opts.dir);
         const allSubdirs: { [key: string]: boolean } = {};
         if (this.opts.subdirs) {
             for (const [_, val] of Object.entries(this.opts.subdirs)) {
@@ -73,7 +71,7 @@ export class FileOutput implements IOutput {
             }
         }
         for (const [subdir, _] of Object.entries(allSubdirs)) {
-            await fs.mkdirp(path.join(this.opts.dir, subdir));
+            fs.mkdirpSync(path.join(this.opts.dir, subdir));
         }
     }
 

@@ -5,7 +5,7 @@ export interface IConsoleOutputOptions {
     /**
      * 使用 ConsoleOutput 输出的主题
      */
-    topics: [string];
+    topics: string[];
 }
 
 export class ConsoleOutput implements IOutput {

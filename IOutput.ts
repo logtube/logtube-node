@@ -18,7 +18,7 @@ export interface IOutput {
  * @param topic
  * @param topics
  */
-export function evaluateTopics(topic: string, topics: [string]): boolean {
+export function evaluateTopics(topic: string, topics: string[]): boolean {
     for (const o of topics) {
         if (o === "*" || o === topic) {
             return true;
@@ -33,7 +33,7 @@ export function evaluateTopics(topic: string, topics: [string]): boolean {
  * @param date
  */
 export function formatEventTimestamp(date: Date): string {
-    return moment(date).format("YYYY-MM-DD HH:mm:ss.SSS Z");
+    return moment(date).format("YYYY-MM-DD HH:mm:ss.SSS ZZ");
 }
 
 /**

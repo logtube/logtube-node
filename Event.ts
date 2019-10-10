@@ -3,6 +3,8 @@
  */
 import {IOutput} from "./IOutput";
 
+const NONAME = "noname";
+
 export class Event {
     /**
      * 日志发生的时间
@@ -11,15 +13,15 @@ export class Event {
     /**
      * 日志所属项目
      */
-    public project: string = "noname";
+    public project: string = NONAME;
     /**
      * 当前的环境名，如 "dev", "test", "staging", "prod"
      */
-    public env: string = "noname";
+    public env: string = NONAME;
     /**
      * 日志主题，如 "info", "debug", "err", "warn"
      */
-    public topic: string = "noname";
+    public topic: string = NONAME;
     /**
      * crid，日志追踪 ID，用于跨多个项目追踪调用链
      */
