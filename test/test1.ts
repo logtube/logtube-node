@@ -1,4 +1,4 @@
-import logtube from "../index";
+import * as logtube from "../index";
 
 logtube.setup({
     console: {
@@ -8,12 +8,16 @@ logtube.setup({
     file: {
         dir: "logs",
         subdirs: {
-            err: "important",
-            warn: "important",
+            important: ["err", "info", "warn"],
         },
         topics: ["err", "info", "warn"],
     },
     project: "test",
 });
 
-logtube.logger().info("hello,world", "hello this beautiful world");
+logtube.err("hello,world", "hello this beautiful world, error");
+logtube.info("hello,world", "hello this beautiful world");
+
+setTimeout(() => {
+    /**/
+}, 1000);

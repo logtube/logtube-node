@@ -1,5 +1,5 @@
 import async from "async";
-import fs from "fs-extra";
+import fs from "fs";
 import moment from "moment";
 import path from "path";
 import {Event} from "./Event";
@@ -11,21 +11,43 @@ export interface IFileOutputOptions {
      */
     topics: string[];
     /**
-     * 文件输出的根目录
+     * 日志目录文件
      */
     dir: string;
     /**
-     * 不同主题对应的子目录，用来便于让 FileBeat 区分需要收集和不需要收集的日志内容
+     * 额外指定某些主题输出的子目录，key 为子目录，value 为主题数组
      */
-    subdirs?: { [key: string]: string };
+    subdirs?: {
+        [key: string]: string[];
+    };
 }
 
 export class FileOutput implements IOutput {
 
+    /**
+     * 初始化日志目录
+     */
+    public static ensureDirectories(opts: IFileOutputOptions) {
+        fs.mkdirSync(opts.dir, {recursive: true});
+        if (opts.subdirs) {
+            for (const subdir of Object.keys(opts.subdirs)) {
+                fs.mkdirSync(path.join(opts.dir, subdir), {recursive: true});
+            }
+        }
+    }
+
+    /**
+     * 格式化文件日期部分
+     * @param date
+     */
     private static formatFilenameDate(date: Date): string {
         return moment(date).format("YYYY-MM-DD");
     }
 
+    /**
+     * 序列化日志事件
+     * @param event
+     */
     private static serialize(event: Event): string {
         return `[${formatEventTimestamp(event.timestamp)}] [${formatEventStructure(event)}] ${event.message}`;
     }
@@ -44,7 +66,6 @@ export class FileOutput implements IOutput {
 
     constructor(opts: IFileOutputOptions) {
         this.opts = opts;
-        this.ensureDirectories();
         this.appendQueue = async.queue(async (task) => {
             await this.appendLine(task.filename, task.line);
         });
@@ -60,33 +81,19 @@ export class FileOutput implements IOutput {
     }
 
     /**
-     * 在初始化的时候，确保所有日志文件目录都创建好了
-     */
-    private ensureDirectories() {
-        fs.mkdirpSync(this.opts.dir);
-        const allSubdirs: { [key: string]: boolean } = {};
-        if (this.opts.subdirs) {
-            for (const [_, val] of Object.entries(this.opts.subdirs)) {
-                allSubdirs[val] = true;
-            }
-        }
-        for (const [subdir, _] of Object.entries(allSubdirs)) {
-            fs.mkdirpSync(path.join(this.opts.dir, subdir));
-        }
-    }
-
-    /**
      * 为某条日志计算输出文件
      * @param event
      */
     private calculateFilename(event: Event): string {
-        let filename = this.opts.dir;
+        let dir = this.opts.dir;
         if (this.opts.subdirs) {
-            if (this.opts.subdirs[event.topic]) {
-                filename = path.join(filename, this.opts.subdirs[event.topic]);
+            for (const [key, val] of Object.entries(this.opts.subdirs)) {
+                if (evaluateTopics(event.topic, val)) {
+                    dir = path.join(dir, key);
+                }
             }
         }
-        return path.join(filename, `${event.env}.${event.topic}.${event.project}.${FileOutput.formatFilenameDate(event.timestamp)}.log`);
+        return path.join(dir, `${event.env}.${event.topic}.${event.project}.${FileOutput.formatFilenameDate(event.timestamp)}.log`);
     }
 
     /**
@@ -96,16 +103,22 @@ export class FileOutput implements IOutput {
     private async ensureFile(filename: string): Promise<number> {
         if (Object.keys(this.fds).length > 150) {
             for (const [_, fd] of Object.entries(this.fds)) {
-                try {
-                    await fs.close(fd);
-                } catch (e) {
+                fs.close(fd, (err) => {
                     /* 我关了，关闭失败了，有什么好说的 */
-                }
+                });
             }
             this.fds = {};
         }
         if (!this.fds[filename]) {
-            this.fds[filename] = await fs.open(filename, "a");
+            this.fds[filename] = await new Promise<number>((resolve, reject) => {
+                fs.open(filename, "a", (err, fd) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(fd);
+                    }
+                });
+            });
         }
         return this.fds[filename];
     }
@@ -117,6 +130,14 @@ export class FileOutput implements IOutput {
      */
     private async appendLine(filename: string, line: string): Promise<void> {
         const fd = await this.ensureFile(filename);
-        await fs.writeFile(fd, line + "\n");
+        await new Promise(((resolve, reject) => {
+            fs.write(fd, line + "\n", (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        }));
     }
 }
