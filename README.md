@@ -33,7 +33,7 @@ Logtube Node.js SDK
         topics: ["info", "err", "warn"], // 设置要通过日志文件输出的主题, "*" 代表全部主题
         dir: "logs",             // 设置日志输出的跟目录
         subdirs: {
-            important: ["info", "err", "warn"] // 额外指定某些主题输出到某个子目录中，这一行示例代表 info, err 和 warn 主题输出到 logs 目录中的 important 子目录下
+            xlog: ["info", "err", "warn"] // 额外指定某些主题输出到某个子目录中，这一行示例代表 info, err 和 warn 主题输出到 logs 目录中的 important 子目录下
         }
       }
     })
