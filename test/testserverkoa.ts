@@ -1,7 +1,7 @@
-import express from "express";
+import Koa from "koa";
 import * as logtube from "../index";
 
-const app = express();
+const app = new Koa();
 
 logtube.setup({
     project: "demo-express",
@@ -13,20 +13,19 @@ logtube.setup({
         topics: ["*"],
         dir: "logs",
         subdirs: {
-            important: ["warn", "err", "info"],
+            xlog: ["*", "-debug"],
         },
     },
 });
 
-app.use(logtube.express());
+app.use(logtube.koa());
 
-app.use("/", (req, res) => {
-    res.locals.log.info("hello world", "hello, world info");
-    res.locals.log.debug("hello world", "hello, world debug");
-    res.locals.log.err("hello world", "hello, world err");
-    res.locals.log.warn("hello world", "hello, world warn");
-    process.stderr.write("CRID: " + res.locals.crid);
-    res.send("hello world");
+app.use((ctx) => {
+    ctx.state.log.info("hello world", "hello, world info");
+    ctx.state.log.debug("hello world", "hello, world debug");
+    ctx.state.log.err("hello world", "hello, world err");
+    ctx.state.log.warn("hello world", "hello, world warn");
+    ctx.body = 'hello word';
 });
 
 app.listen(8080);

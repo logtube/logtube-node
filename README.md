@@ -27,13 +27,13 @@ Logtube Node.js SDK
       project: "demoproject",   // 设置项目名，只允许数字，- 和 _
       env: "test",              // 设置项目环境名，一般为 dev, test, uat/staging, prod
       console: {                // 命令行输出
-        topics: ["*"],          // 设置要通过命令行输出的主题，"*" 代表全部主题
+        topics: ["*", "-debug"],// 设置要通过命令行输出的主题，"*" 代表全部主题，-debug 代表除了 debug 主题
       },
-      file: {                   // 日志文件输出
-        topics: ["info", "err", "warn"], // 设置要通过日志文件输出的主题, "*" 代表全部主题
+      file: {                    // 日志文件输出
+        topics: ["*", "-debug"], // 设置要通过日志文件输出的主题, "*" 代表全部主题，-debug 代表了除了 debug 主题
         dir: "logs",             // 设置日志输出的跟目录
         subdirs: {
-            xlog: ["info", "err", "warn"] // 额外指定某些主题输出到某个子目录中，这一行示例代表 info, err 和 warn 主题输出到 logs 目录中的 important 子目录下
+            xlog: ["*", "-debug"] // 非调试日志输出到 `xlog` 子目录内，便于收集
         }
       }
     })
@@ -41,13 +41,15 @@ Logtube Node.js SDK
    
 3. 使用常规输出
 
-    第一个参数为关键字，逗号或空格分割，**只有**关键字可以在日志系统检索，第二个参数为日志内容
+    **第一个参数为关键字，逗号或空格分割**
+    
+    **只有**关键字可以在日志系统检索，第二个参数为日志内容
 
     ```typescript
-    logtube.info("12345678", "order created with id 12345678")
-    logtube.warn("12345678", "order created with id 12345678")
-    logtube.err("12345678", "order created with id 12345678")
-    logtube.debug("12345678", "order created with id 12345678")
+    logtube.info("USER12345678", "order created with id 12345678")
+    logtube.warn("USER12345678", "order created with id 12345678")
+    logtube.err("USER12345678", "order created with id 12345678")
+    logtube.debug("USER12345678", "order created with id 12345678")
     ```
    
 4. 使用 Express 中间件
@@ -64,6 +66,22 @@ Logtube Node.js SDK
       res.locals.crid // 此变量保存了 CRID 字符串，用于跨多个服务追踪请求，进行下一级服务调用，需要将此值设置到 Header X-Correlation-ID
       res.send("hello world")
     })
+    ```
+   
+5. 使用 Koa 中间件
+
+    Koa 中间件会捕获 CRID，并创建请求专用的 Logger
+    
+    ```typescript
+    const app = Koa();
+    app.use(logtube.koa());
+   
+    app.use((ctx) => {
+       ctx.state.log //  此变量为当前 request 专用的 Logger
+       ctx.state.log.info("hello world", "hello, world info");
+       ctx.state.crid // 此变量保存了 CRID 字符串，用于跨多个服务追踪请求，进行下一级服务调用，需要将此值设置到 Header X-Correlation-ID
+       ctx.body = 'hello word';
+    });
     ```
    
  ## Credits

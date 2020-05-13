@@ -19,12 +19,23 @@ export interface IOutput {
  * @param topics
  */
 export function evaluateTopics(topic: string, topics: string[]): boolean {
-    for (const o of topics) {
-        if (o === "*" || o === topic) {
-            return true;
+    if (topics.includes("*")) {
+        // 黑名单模式
+        for (const o of topics) {
+            if (o === "-" + topic) {
+                return false;
+            }
         }
+        return true;
+    } else {
+        // 白名单模式
+        for (const o of topics) {
+            if (o === topic) {
+                return true;
+            }
+        }
+        return false;
     }
-    return false;
 }
 
 /**

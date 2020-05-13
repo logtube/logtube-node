@@ -86,6 +86,15 @@ export function err(keyword: string, message: string) {
 }
 
 /**
+ * 快速输出一条纯文本日志到 fatal 主题
+ * @param keyword
+ * @param message
+ */
+export function fatal(keyword: string, message: string) {
+    log("fatal", keyword, message);
+}
+
+/**
  * 创建 Express 中间件，添加 res.locals.log，用于日志
  * @param req
  */
