@@ -3,6 +3,7 @@ import {Event} from "./Event";
 import {FileOutput} from "./FileOutput";
 import {IOptions} from "./IOptions";
 import {Logger} from "./Logger";
+import {Middleware} from "koa";
 
 const NONAME = "noname";
 
@@ -103,4 +104,26 @@ export function express(): RequestHandler {
         res.locals.log = l;
         next();
     };
+}
+
+/**
+ * 创建 Koa 中间件，获取 Crid，并添加 ctx.state.log 用于日志
+ */
+export function koa(): Middleware {
+    return async function (ctx, next) {
+        let {request, response} = ctx;
+        const l = new Logger(globalOptions);
+        let crid = request.get('X-Correlation-ID')
+        if (request.query && typeof request.query._crid === "string") {
+            crid = request.query._crid;
+        }
+        let body = (request as any).body
+        if (body && typeof body._crid === "string") {
+            crid = body._crid;
+        }
+        l.setCrid(crid);
+        ctx.state.crid = l.getCrid();
+        ctx.state.log = l;
+        await next();
+    }
 }
