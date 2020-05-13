@@ -68,4 +68,8 @@ export class AuditEvent {
         this.event.commit();
     }
 
+    public submit() {
+        this.commit();
+    }
+
 }

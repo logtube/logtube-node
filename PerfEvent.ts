@@ -63,4 +63,8 @@ export class PerfEvent {
         this.event.commit();
     }
 
+    public submit() {
+        this.commit();
+    }
+
 }
