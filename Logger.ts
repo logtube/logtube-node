@@ -4,6 +4,8 @@ import {Event} from "./Event";
 import {FileOutput} from "./FileOutput";
 import {IOptions} from "./IOptions";
 import {IOutput} from "./IOutput";
+import {PerfEvent} from "./PerfEvent";
+import {AuditEvent} from "./AuditEvent";
 
 export class Logger implements IOutput {
 
@@ -119,6 +121,20 @@ export class Logger implements IOutput {
      */
     public fatal(keyword: string, message: string) {
         this.log("fatal", keyword, message);
+    }
+
+    /**
+     * 准备一条性能日志，记得调用 commit()
+     */
+    public perf(): PerfEvent {
+        return new PerfEvent(this.topic("x-perf"));
+    }
+
+    /**
+     * 准备一条审计日志，记得调用 commit()
+     */
+    public audit(): AuditEvent {
+        return new AuditEvent(this.topic("x-audit"));
     }
 
 }

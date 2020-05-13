@@ -5,6 +5,8 @@ import {IOptions} from "./IOptions";
 import {Logger} from "./Logger";
 import {Middleware} from "koa";
 import onFinished from "on-finished";
+import {PerfEvent} from "./PerfEvent";
+import {AuditEvent} from "./AuditEvent";
 
 const NONAME = "noname";
 
@@ -38,6 +40,10 @@ export function setup(options: IOptions) {
  */
 export function event(topic: string): Event {
     return globalLogger.event(topic);
+}
+
+export function topic(topic: string): Event {
+    return event(topic);
 }
 
 /**
@@ -96,8 +102,21 @@ export function fatal(keyword: string, message: string) {
 }
 
 /**
+ * 准备一条性能日志，记得调用 commit()
+ */
+export function perf(): PerfEvent {
+    return new PerfEvent(topic("x-perf"));
+}
+
+/**
+ * 准备一条审计日志，记得调用 commit()
+ */
+export function audit(): AuditEvent {
+    return new AuditEvent(topic("x-audit"));
+}
+
+/**
  * 创建 Express 中间件，添加 res.locals.log，用于日志
- * @param req
  */
 export function express(): RequestHandler {
     return (req, res, next) => {

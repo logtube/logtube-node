@@ -94,6 +94,34 @@ Logtube Node.js SDK
     });
     ```
    
+6. 性能日志
+
+```javascript
+let perf = logger.perf()
+.className("MyClass")
+.methodName("MyMethod")
+.action("some_action")
+.actionDetail("hello world");
+
+setTimeout(function() {
+    // 可以记录一条任意整数
+    // 提交时，会进行计时，报告 x_duration = 2000
+    perf.valueInteger(999).commit(); 
+}, 2000)
+```
+
+7. 审计日志
+
+```javascript
+logger.audit()
+.userCode("10086")
+.userName("郭麒麟")
+.action("some_action")
+.actionDetail("详细信息")
+// ...设置其他值
+.commit();
+```
+   
  ## Credits
  
  Guo Y.K., MIT License
