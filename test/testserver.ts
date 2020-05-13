@@ -13,12 +13,13 @@ logtube.setup({
         topics: ["*"],
         dir: "logs",
         subdirs: {
-            important: ["warn", "err", "info"],
+            xlog: ["*", "-debug"]
         },
     },
 });
 
 app.use(logtube.express());
+app.use(logtube.expressAccess());
 
 app.use("/", (req, res) => {
     res.locals.log.info("hello world", "hello, world info");

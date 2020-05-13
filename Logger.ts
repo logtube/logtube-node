@@ -56,6 +56,10 @@ export class Logger implements IOutput {
         return event;
     }
 
+    public topic(topic: string): Event {
+        return this.event(topic);
+    }
+
     public appendEvent(event: Event): void {
         for (const output of this.outputs) {
             output.appendEvent(event);
@@ -106,6 +110,15 @@ export class Logger implements IOutput {
      */
     public err(keyword: string, message: string) {
         this.log("err", keyword, message);
+    }
+
+    /**
+     * 快速输出一条纯文本日志到 fatal主题
+     * @param keyword
+     * @param message
+     */
+    public fatal(keyword: string, message: string) {
+        this.log("fatal", keyword, message);
     }
 
 }

@@ -47,9 +47,16 @@ export class Event {
      * 提交日志到输出
      */
     public submit() {
+        if (this.message == null) {
+            this.message = "";
+        }
         if (this.output) {
             this.output.appendEvent(this);
         }
+    }
+
+    public commit() {
+        this.submit();
     }
 
     /**

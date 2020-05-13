@@ -58,7 +58,12 @@ Logtube Node.js SDK
 
     ```typescript
     const app = express()
-    app.use(logtube.express())
+   
+    // 添加 express 中间件，自动为 ctx.locals 添加 log 和 crid
+    app.use(logtube.express());
+  
+    // 添加 expressAccess 中间件，自动输出符合标准的 x-access 日志
+    app.use(logtube.expressAccess())
     
     app.use("/", function(req, res) {
       res.locals.log //  此变量为当前 request 专用的 Logger
@@ -74,7 +79,12 @@ Logtube Node.js SDK
     
     ```typescript
     const app = Koa();
+   
+    // 添加 koa 中间件，自动为 ctx.state 添加 log 和 crid
     app.use(logtube.koa());
+   
+    // 添加 koaAccess 中间件，自动输出符合标准的 x-access 日志
+    app.use(logtube.koaAccess())
    
     app.use((ctx) => {
        ctx.state.log //  此变量为当前 request 专用的 Logger

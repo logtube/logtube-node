@@ -19,6 +19,7 @@ logtube.setup({
 });
 
 app.use(logtube.koa());
+app.use(logtube.koaAccess());
 
 app.use((ctx) => {
     ctx.state.log.info("hello world", "hello, world info");

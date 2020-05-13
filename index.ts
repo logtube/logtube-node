@@ -4,6 +4,7 @@ import {FileOutput} from "./FileOutput";
 import {IOptions} from "./IOptions";
 import {Logger} from "./Logger";
 import {Middleware} from "koa";
+import onFinished from "on-finished";
 
 const NONAME = "noname";
 
@@ -116,6 +117,32 @@ export function express(): RequestHandler {
 }
 
 /**
+ * 创建 Express Access 日志中间件，自动输出符合标准的 x-access 日志文件
+ */
+export function expressAccess(): RequestHandler {
+    return ((req, res, next) => {
+        let e = res.locals.log.topic("x-access");
+        e.x('header_app_info', req.header("App-Info"));
+        e.x('header_user_token', req.header('User-Token'));
+        e.x('host', req.header('Host'));
+        e.x('method', req.method);
+        e.x('path', req.path);
+        let i = req.originalUrl.indexOf('?');
+        if (i >= 0) {
+            let query = req.originalUrl.substr(i + 1);
+            e.x('query', query);
+        }
+        let startTime = Date.now();
+        onFinished(res, function (err, res) {
+            e.x('status', res.statusCode);
+            e.x('duration', Date.now() - startTime);
+            e.commit();
+        });
+        next()
+    })
+}
+
+/**
  * 创建 Koa 中间件，获取 Crid，并添加 ctx.state.log 用于日志
  */
 export function koa(): Middleware {
@@ -134,5 +161,25 @@ export function koa(): Middleware {
         ctx.state.crid = l.getCrid();
         ctx.state.log = l;
         await next();
+    }
+}
+
+/**
+ * 创建 Koa Access 日志中间件，自动输出符合标准的 x-access 日志文件
+ */
+export function koaAccess(): Middleware {
+    return async function (ctx, next) {
+        let e = ctx.state.log.topic("x-access");
+        e.x('header_app_info', ctx.req.headers["app-info"]);
+        e.x('header_user_token', ctx.req.headers['user-token']);
+        e.x('host', ctx.req.headers['host']);
+        e.x('method', ctx.req.method);
+        e.x('path', ctx.path);
+        e.x('query', ctx.querystring);
+        let startTime = Date.now();
+        await next();
+        e.x('status', ctx.res.statusCode);
+        e.x('duration', Date.now() - startTime);
+        e.submit();
     }
 }
