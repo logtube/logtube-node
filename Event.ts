@@ -1,7 +1,7 @@
 /**
  * 每一条日志即为一条事件，可以包含纯文本日志 "message" 和 结构化日志内容 "extra"
  */
-import {IOutput} from "./IOutput";
+import { IOutput } from "./IOutput";
 
 const NONAME = "noname";
 

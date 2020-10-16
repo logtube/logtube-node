@@ -1,5 +1,5 @@
-import {IConsoleOutputOptions} from "./ConsoleOutput";
-import {IFileOutputOptions} from "./FileOutput";
+import { IConsoleOutputOptions } from "./ConsoleOutput";
+import { IFileOutputOptions } from "./FileOutput";
 
 export interface IOptions {
     project: string;

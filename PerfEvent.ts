@@ -1,9 +1,9 @@
-import {Event} from './Event'
+import {Event} from "./Event";
 
 export class PerfEvent {
-    event: Event
+    public event: Event;
 
-    startTime: number
+    public startTime: number;
 
     constructor(event: Event) {
         this.event = event;
@@ -33,7 +33,7 @@ export class PerfEvent {
      * @param action
      */
     public action(action: string): PerfEvent {
-        this.event.x("action", action)
+        this.event.x("action", action);
         return this;
     }
 
@@ -42,7 +42,7 @@ export class PerfEvent {
      * @param actionDetail
      */
     public actionDetail(actionDetail: string): PerfEvent {
-        this.event.x("action_detail", actionDetail)
+        this.event.x("action_detail", actionDetail);
         return this;
     }
 
@@ -51,7 +51,7 @@ export class PerfEvent {
      * @param value
      */
     public valueInteger(value: number): PerfEvent {
-        this.event.x("value_integer", value)
+        this.event.x("value_integer", value);
         return this;
     }
 

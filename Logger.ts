@@ -1,13 +1,15 @@
 import crypto from "crypto";
-import {ConsoleOutput} from "./ConsoleOutput";
-import {Event} from "./Event";
-import {FileOutput} from "./FileOutput";
-import {IOptions} from "./IOptions";
-import {IOutput} from "./IOutput";
-import {PerfEvent} from "./PerfEvent";
-import {AuditEvent} from "./AuditEvent";
+import { AuditEvent } from "./AuditEvent";
+import { ConsoleOutput } from "./ConsoleOutput";
+import { Event } from "./Event";
+import { FileOutput } from "./FileOutput";
+import { IOptions } from "./IOptions";
+import { IOutput } from "./IOutput";
+import { PerfEvent } from "./PerfEvent";
 
 export class Logger implements IOutput {
+
+    public extras: { [key: string]: any } = {};
 
     private readonly project: string;
 
@@ -45,6 +47,13 @@ export class Logger implements IOutput {
     }
 
     /**
+     * 获取 Project
+     */
+    public getProject(): string {
+        return this.project;
+    }
+
+    /**
      * 创建日志事件，任何日志事件必须制定主题
      * @param topic
      */
@@ -55,6 +64,9 @@ export class Logger implements IOutput {
         event.env = this.env;
         event.topic = topic;
         event.output = this;
+        for (const k in this.extras) {
+            event.x(k, this.extras[k]);
+        }
         return event;
     }
 

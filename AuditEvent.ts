@@ -1,7 +1,7 @@
-import {Event} from "./Event"
+import {Event} from "./Event";
 
 export class AuditEvent {
-    event: Event
+    public event: Event;
 
     constructor(event: Event) {
         this.event = event;
@@ -39,7 +39,7 @@ export class AuditEvent {
      * @param action
      */
     public action(action: String): AuditEvent {
-        this.event.x("action", action)
+        this.event.x("action", action);
         return this;
     }
 

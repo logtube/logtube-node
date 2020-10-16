@@ -93,6 +93,40 @@ Logtube Node.js SDK
        ctx.body = 'hello word';
     });
     ```
+
+6. 为 Logger 设置默认的 `extras` 值
+
+    ```typescript
+    // express
+    app.use("/", function(req, res) {
+      // 这一行会让所有该 Logger 生成的日志事件追加 x_module = "my_module" 字段
+      res.locals.log.extras.module = "my_module";
+    })
+
+    // koa
+    app.use((ctx) => {
+      // 这一行会让所有该 Logger 生成的日志事件追加 x_module = "my_module" 字段
+      ctx.state.log.extras.module = "my_module";
+    })
+    ```
+
+7. 传导 CRID 和 CRSRC 到下一级项目（以 requests 包为例）
+
+    ```typescript
+    // express
+    app.use("/", function(req, res) {
+      requests("https://httpbin.org/get", {
+        headers: res.locals.logtubeHeaders
+      }).then((res) => {
+      })
+    })
+    // koa
+    app.use((ctx)=>{
+      await requests("https://httpbin.org/get", {
+        headers: ctx.state.logtubeHeaders
+      })
+    })
+    ```
    
 6. 性能日志
 

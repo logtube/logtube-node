@@ -1,5 +1,5 @@
 import moment from "moment";
-import {Event} from "./Event";
+import { Event } from "./Event";
 
 /**
  * 日志输出器，有 ConsoleOutput 和 FileOutput

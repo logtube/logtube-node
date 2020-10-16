@@ -2,8 +2,8 @@ import async from "async";
 import fs from "fs";
 import moment from "moment";
 import path from "path";
-import {Event} from "./Event";
-import {evaluateTopics, formatEventStructure, formatEventTimestamp, IOutput} from "./IOutput";
+import { Event } from "./Event";
+import { evaluateTopics, formatEventStructure, formatEventTimestamp, IOutput } from "./IOutput";
 
 /**
  * 缓存的文件句柄，防止重复打开关闭文件
@@ -33,10 +33,10 @@ export class FileOutput implements IOutput {
      * 初始化日志目录
      */
     public static ensureDirectories(opts: IFileOutputOptions) {
-        fs.mkdirSync(opts.dir, {recursive: true});
+        fs.mkdirSync(opts.dir, { recursive: true });
         if (opts.subdirs) {
             for (const subdir of Object.keys(opts.subdirs)) {
-                fs.mkdirSync(path.join(opts.dir, subdir), {recursive: true});
+                fs.mkdirSync(path.join(opts.dir, subdir), { recursive: true });
             }
         }
     }
@@ -76,7 +76,7 @@ export class FileOutput implements IOutput {
 
     public appendEvent(event: Event): void {
         if (evaluateTopics(event.topic, this.opts.topics)) {
-            this.appendQueue.push({filename: this.calculateFilename(event), line: FileOutput.serialize(event)});
+            this.appendQueue.push({ filename: this.calculateFilename(event), line: FileOutput.serialize(event) });
         }
     }
 

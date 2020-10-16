@@ -13,7 +13,7 @@ logtube.setup({
         topics: ["*"],
         dir: "logs",
         subdirs: {
-            xlog: ["*", "-debug"]
+            xlog: ["*", "-debug"],
         },
     },
 });

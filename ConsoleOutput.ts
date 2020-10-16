@@ -1,5 +1,5 @@
-import {Event} from "./Event";
-import {evaluateTopics, formatEventStructure, formatEventTimestamp, IOutput} from "./IOutput";
+import { Event } from "./Event";
+import { evaluateTopics, formatEventStructure, formatEventTimestamp, IOutput } from "./IOutput";
 
 export interface IConsoleOutputOptions {
     /**
