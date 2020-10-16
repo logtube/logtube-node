@@ -5,6 +5,11 @@ import path from "path";
 import {Event} from "./Event";
 import {evaluateTopics, formatEventStructure, formatEventTimestamp, IOutput} from "./IOutput";
 
+/**
+ * 缓存的文件句柄，防止重复打开关闭文件
+ */
+let sharedFiles: { [key: string]: number } = {};
+
 export interface IFileOutputOptions {
     /**
      * 使用 FileOutput 输出的主题
@@ -55,11 +60,6 @@ export class FileOutput implements IOutput {
     private opts: IFileOutputOptions;
 
     /**
-     * 缓存的文件句柄，防止重复打开关闭文件
-     */
-    private fds: { [key: string]: number } = {};
-
-    /**
      * 执行队列，是的，Nodejs 也需要执行队列，不然文件操作可能互相冲突
      */
     private appendQueue: async.AsyncQueue<{ filename: string, line: string }>;
@@ -101,16 +101,16 @@ export class FileOutput implements IOutput {
      * @param filename
      */
     private async ensureFile(filename: string): Promise<number> {
-        if (Object.keys(this.fds).length > 150) {
-            for (const [_, fd] of Object.entries(this.fds)) {
+        if (Object.keys(sharedFiles).length > 150) {
+            for (const [_, fd] of Object.entries(sharedFiles)) {
                 fs.close(fd, (err) => {
                     /* 我关了，关闭失败了，有什么好说的 */
                 });
             }
-            this.fds = {};
+            sharedFiles = {};
         }
-        if (!this.fds[filename]) {
-            this.fds[filename] = await new Promise<number>((resolve, reject) => {
+        if (!sharedFiles[filename]) {
+            sharedFiles[filename] = await new Promise<number>((resolve, reject) => {
                 fs.open(filename, "a", (err, fd) => {
                     if (err) {
                         reject(err);
@@ -120,7 +120,7 @@ export class FileOutput implements IOutput {
                 });
             });
         }
-        return this.fds[filename];
+        return sharedFiles[filename];
     }
 
     /**
