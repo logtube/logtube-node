@@ -10,6 +10,18 @@ import { evaluateTopics, formatEventStructure, formatEventTimestamp, IOutput } f
  */
 let sharedFiles: { [key: string]: number } = {};
 
+/**
+ * 每隔 10 分钟，关闭并清空所有句柄
+ */
+setInterval(function () {
+    for (const [_, fd] of Object.entries(sharedFiles)) {
+        fs.close(fd, (err) => {
+            /* 我关了，关闭失败了，有什么好说的 */
+        });
+    }
+    sharedFiles = {};
+}, 10 * 60 * 1000);
+
 export interface IFileOutputOptions {
     /**
      * 使用 FileOutput 输出的主题
@@ -101,14 +113,6 @@ export class FileOutput implements IOutput {
      * @param filename
      */
     private async ensureFile(filename: string): Promise<number> {
-        if (Object.keys(sharedFiles).length > 150) {
-            for (const [_, fd] of Object.entries(sharedFiles)) {
-                fs.close(fd, (err) => {
-                    /* 我关了，关闭失败了，有什么好说的 */
-                });
-            }
-            sharedFiles = {};
-        }
         if (!sharedFiles[filename]) {
             sharedFiles[filename] = await new Promise<number>((resolve, reject) => {
                 fs.open(filename, "a", (err, fd) => {

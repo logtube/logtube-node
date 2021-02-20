@@ -1,6 +1,6 @@
 {
   "name": "logtube",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Logtube Node.js SDK",
   "main": "dist/index.js",
   "scripts": {
