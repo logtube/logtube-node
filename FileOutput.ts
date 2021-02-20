@@ -133,9 +133,9 @@ export class FileOutput implements IOutput {
      * @param line
      */
     private async appendLine(filename: string, line: string): Promise<void> {
-        const fd = await this.ensureFile(filename);
+        // const fd = await this.ensureFile(filename);
         await new Promise(((resolve, reject) => {
-            fs.write(fd, line + "\n", (err) => {
+            fs.writeFile(fd, line + "\n", (err) => {
                 if (err) {
                     reject(err);
                 } else {
